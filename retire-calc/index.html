@@ -98,6 +98,15 @@ ul.adv b{color:var(--ink)}
 .kv div:nth-child(odd){color:var(--muted)}
 .kv div:nth-child(even){text-align:right}
 .kv .big{font-weight:700;font-size:16px;color:var(--ink)}
+.guide{max-width:1240px;margin:0 auto;padding:8px 16px 0}
+.guide details{background:var(--paper);border:1px solid var(--line);border-radius:10px}
+.guide summary{font-size:16px}
+.steps{list-style:none;margin:0;padding:0 16px 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;counter-reset:st}
+.steps>li{counter-increment:st;border:1px solid var(--line);border-radius:8px;padding:10px 12px 10px 44px;position:relative;font-size:14px;background:var(--bg)}
+.steps>li::before{content:counter(st);position:absolute;left:12px;top:10px;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--paper);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.steps b{color:var(--navy)}
+.steps ul{margin:4px 0 0;padding-left:18px}
+.steps a{color:var(--accent)}
 footer{max-width:1240px;margin:0 auto;padding:4px 16px 32px;color:var(--muted);font-size:12px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -107,6 +116,33 @@ footer{max-width:1240px;margin:0 auto;padding:4px 16px 32px;color:var(--muted);f
   <h1>勞保勞退退休試算</h1>
   <p>填入出生年月、薪資和目前年資，就能算出勞保、勞退的月領／年領金額、不同退休年齡的比較、薪資對應的投保級距，以及加薪後的建議做法。預設值只是範例，請改成你自己的資料，結果會立即更新；資料只存在你自己的瀏覽器，不會上傳。</p>
 </header>
+
+<div class="guide">
+<details open>
+<summary>怎麼填？5 分鐘教學</summary>
+<ol class="steps">
+  <li><b>先查自己的資料</b>：用自然人憑證或健保卡登入<a href="https://edesk.bli.gov.tw/" target="_blank" rel="noopener">勞保局 e 化服務系統</a>（或「勞保局 e 化服務」App），查這三項：
+    <ul>
+      <li>「勞保（就保、災保）異動查詢」：勞保年資、投保薪資</li>
+      <li>「勞工退休金提繳異動查詢」：勞退年資、有沒有自提</li>
+      <li>「勞工退休金個人專戶明細」：專戶目前餘額</li>
+    </ul></li>
+  <li><b>基本資料</b>：填出生年月。預期壽命不確定就填 85。退休每月生活費請用「今天的物價」估，例如現在每月花 4 萬就填 40000，網站會自動加上通膨。</li>
+  <li><b>薪資結構</b>：照薪資單填<b>每月固定</b>拿到的本薪、伙食、津貼、平均加班費。年終填幾個月，三節、績效獎金填在「其他獎金」。這些只用來估稅率，不影響投保級距。</li>
+  <li><b>勞保、勞退現況</b>：
+    <ul>
+      <li>勞保年資：把投保期間加總，可以填小數，例如 8 年 4 個月填 8.3</li>
+      <li>平均投保薪資：近 5 年月薪都超過 45,800 就填 45800</li>
+      <li>勞退年資、專戶餘額：照查到的填</li>
+      <li>自提率：查詢表「個人自願提繳率」空白就選「不自提」</li>
+    </ul></li>
+  <li><b>退休規劃</b>：填你打算幾歲停止工作。兩個請領年齡可以留空，留空就是停止工作那年開始領。勞退月領或一次領可以切換比較。</li>
+  <li><b>假設參數</b>：看不懂就用預設值。勞退基金報酬預設 6%，想保守一點可以改 4%。</li>
+  <li><b>加薪情境</b>（選填）：有 offer 或預計加薪時填，第 5 區會比較「維持現狀／加薪／加薪＋自提 6%」。如果希望最上面的結果也照加薪後計算，「主要結果套用加薪」選「是」。</li>
+  <li><b>怎麼看結果</b>：最上面 4 格是重點。第 4 區比較不同退休年齡領多少，第 5 區給加薪後的建議。「需自備資產」是除了勞保、勞退之外還要自己存的錢；「每月需投資」是從現在起每月要投資多少才存得到。</li>
+</ol>
+</details>
+</div>
 
 <div class="wrap">
 <aside>
