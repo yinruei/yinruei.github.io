@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>勞保勞退退休試算</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* 版面：左側輸入（桌機置頂固定）、右側結果；手機單欄。帳簿式的冷色紙張 + 墨藍 + 銅色重點 */
+:root{
+  --bg:#f3f5f4;
+  --paper:#ffffff;
+  --ink:#16232e;
+  --muted:#5b6a73;
+  --line:#d7dedc;
+  --accent:#9a5b13;
+  --accent-soft:#f6ecdf;
+  --navy:#1d3b52;
+  --good:#1f7a4d; --good-soft:#e3f2ea;
+  --warn:#a35a00; --warn-soft:#fbefdc;
+  --bad:#b0352b; --bad-soft:#f9e3e0;
+  --display:"Noto Serif TC","Songti TC",serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#10171c; --paper:#172129; --ink:#e6ecef; --muted:#9aa9b2; --line:#2b3a44;
+    --accent:#e0a35a; --accent-soft:#2e2416; --navy:#9cc3e0;
+    --good:#5fcf95; --good-soft:#163024; --warn:#f0b35c; --warn-soft:#33260f; --bad:#ff8a7e; --bad-soft:#3a1b18;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10171c; --paper:#172129; --ink:#e6ecef; --muted:#9aa9b2; --line:#2b3a44;
+  --accent:#e0a35a; --accent-soft:#2e2416; --navy:#9cc3e0;
+  --good:#5fcf95; --good-soft:#163024; --warn:#f0b35c; --warn-soft:#33260f; --bad:#ff8a7e; --bad-soft:#3a1b18;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.6;-webkit-text-size-adjust:100%}
+header{padding:28px 16px 8px;max-width:1240px;margin:0 auto}
+h1{font-family:var(--display);font-size:clamp(24px,4vw,32px);margin:0;text-wrap:balance;color:var(--navy)}
+header p{margin:6px 0 0;color:var(--muted);max-width:68ch}
+.wrap{max-width:1240px;margin:0 auto;padding:16px;display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:20px;align-items:start}
+@media (max-width:880px){.wrap{grid-template-columns:1fr}}
+aside{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;background:var(--paper);border:1px solid var(--line);border-radius:10px}
+@media (max-width:880px){aside{position:static;max-height:none}}
+details{border-bottom:1px solid var(--line)}
+details:last-of-type{border-bottom:none}
+summary{cursor:pointer;padding:12px 16px;font-weight:700;color:var(--navy);list-style:none;display:flex;justify-content:space-between;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"＋";color:var(--muted);font-weight:400}
+details[open] summary::after{content:"－"}
+.fields{padding:0 16px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+.f{display:flex;flex-direction:column;gap:3px}
+.f.full{grid-column:1/-1}
+label{font-size:13px;color:var(--muted)}
+input,select{font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 9px;width:100%;font-variant-numeric:tabular-nums}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+.hint{font-size:12px;color:var(--muted)}
+.btnrow{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+button{font:inherit;cursor:pointer;border-radius:6px;padding:7px 12px;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{display:flex;flex-direction:column;gap:18px;min-width:0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.tile{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px}
+.tile .k{font-size:13px;color:var(--muted)}
+.tile .v{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);line-height:1.3}
+.tile .s{font-size:12px;color:var(--muted)}
+.tile.hl{border-color:var(--accent);background:var(--accent-soft)}
+section.card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+section.card h2{font-family:var(--display);font-size:19px;margin:0 0 10px;color:var(--navy);display:flex;gap:10px;align-items:baseline}
+section.card h2 .no{font-family:var(--body);font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.05em}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:14px}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left;white-space:normal}
+th{font-weight:500;color:var(--muted);font-size:13px}
+tr.em td{font-weight:700}
+tr.sel td{background:var(--accent-soft)}
+.pill{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;font-weight:500}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.note{font-size:13px;color:var(--muted);margin:10px 0 0}
+ul.adv{margin:6px 0 0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+ul.adv li{border-left:3px solid var(--line);padding:2px 0 2px 12px}
+ul.adv li.good{border-color:var(--good)} ul.adv li.warn{border-color:var(--warn)} ul.adv li.info{border-color:var(--navy)}
+ul.adv b{color:var(--ink)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:620px){.two{grid-template-columns:1fr}}
+.kv{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-variant-numeric:tabular-nums;font-size:14px}
+.kv div:nth-child(odd){color:var(--muted)}
+.kv div:nth-child(even){text-align:right}
+.kv .big{font-weight:700;font-size:16px;color:var(--ink)}
+footer{max-width:1240px;margin:0 auto;padding:4px 16px 32px;color:var(--muted);font-size:12px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>勞保勞退退休試算</h1>
+  <p>填入出生年月、薪資和目前年資，就能算出勞保、勞退的月領／年領金額、不同退休年齡的比較、薪資對應的投保級距，以及加薪後的建議做法。預設值只是範例，請改成你自己的資料，結果會立即更新；資料只存在你自己的瀏覽器，不會上傳。</p>
+</header>
+
+<div class="wrap">
+<aside>
+<form id="form" autocomplete="off">
+  <details open>
+    <summary>基本資料</summary>
+    <div class="fields">
+      <div class="f"><label for="birth">出生年月</label><input type="month" id="birth"></div>
+      <div class="f"><label for="lifeExp">預期壽命（歲）</label><input type="number" id="lifeExp" min="70" max="105" step="1"></div>
+      <div class="f"><label for="dep">健保眷屬人數</label><input type="number" id="dep" min="0" max="3" step="1"></div>
+      <div class="f"><label for="expense">退休每月生活費（今日幣值）</label><input type="number" id="expense" min="0" step="1000"></div>
+    </div>
+  </details>
+  <details open>
+    <summary>薪資結構（每月）</summary>
+    <div class="fields">
+      <div class="f"><label for="base">本薪</label><input type="number" id="base" min="0" step="100"></div>
+      <div class="f"><label for="meal">伙食津貼</label><input type="number" id="meal" min="0" step="100"></div>
+      <div class="f"><label for="allow">職務／全勤等經常性津貼</label><input type="number" id="allow" min="0" step="100"></div>
+      <div class="f"><label for="ot">平均加班費</label><input type="number" id="ot" min="0" step="100"></div>
+      <div class="f"><label for="bonusM">年終獎金（幾個月）</label><input type="number" id="bonusM" min="0" step="0.5"></div>
+      <div class="f"><label for="otherBonus">其他獎金（每年）</label><input type="number" id="otherBonus" min="0" step="1000"></div>
+      <div class="f"><label for="growth">之後每年加薪（%）</label><input type="number" id="growth" min="0" max="20" step="0.5"></div>
+      <div class="f"><label for="otherInc">其他年所得（報稅用）</label><input type="number" id="otherInc" min="0" step="10000"></div>
+      <p class="hint f full">年終、三節、考績等非經常性獎金不算進投保薪資，只用來估所得稅率。</p>
+    </div>
+  </details>
+  <details open>
+    <summary>目前勞保、勞退狀況</summary>
+    <div class="fields">
+      <div class="f"><label for="liYears">勞保年資（年）</label><input type="number" id="liYears" min="0" step="0.1"></div>
+      <div class="f"><label for="liAvg">近 60 個月平均投保薪資</label><input type="number" id="liAvg" min="0" step="100"></div>
+      <div class="f"><label for="lpYears">勞退提繳年資（年）</label><input type="number" id="lpYears" min="0" step="0.1"></div>
+      <div class="f"><label for="bal">勞退專戶目前餘額</label><input type="number" id="bal" min="0" step="1000"></div>
+      <div class="f"><label for="emp">雇主提繳率（%）</label><input type="number" id="emp" min="6" max="15" step="0.5"></div>
+      <div class="f"><label for="self">自提率（%）</label><select id="self"></select></div>
+    </div>
+  </details>
+  <details open>
+    <summary>退休規劃</summary>
+    <div class="fields">
+      <div class="f"><label for="retire">幾歲停止工作</label><input type="number" id="retire" min="45" max="75" step="1"></div>
+      <div class="f"><label for="lpMode">勞退領法</label><select id="lpMode"><option value="m">月領</option><option value="l">一次領</option></select></div>
+      <div class="f"><label for="liClaim">勞保開始請領年齡</label><input type="number" id="liClaim" min="60" max="75" step="1" placeholder="同停止工作年齡"></div>
+      <div class="f"><label for="lpClaim">勞退開始請領年齡</label><input type="number" id="lpClaim" min="60" max="80" step="1" placeholder="同停止工作年齡"></div>
+      <p class="hint f full">請領年齡留空＝跟停止工作同一年開始領。勞保要離職退保才能領；勞退最早 60 歲。</p>
+    </div>
+  </details>
+  <details>
+    <summary>假設參數</summary>
+    <div class="fields">
+      <div class="f"><label for="rFund">勞退基金年報酬（%）</label><input type="number" id="rFund" step="0.5"></div>
+      <div class="f"><label for="rAnn">月領年金化利率（%）</label><input type="number" id="rAnn" step="0.1"></div>
+      <div class="f"><label for="inf">通膨率（%）</label><input type="number" id="inf" step="0.5"></div>
+      <div class="f"><label for="rInv">自己投資年報酬（%）</label><input type="number" id="rInv" step="0.5"></div>
+      <div class="f"><label for="rPost">退休後投資報酬（%）</label><input type="number" id="rPost" step="0.5"></div>
+      <div class="f"><label for="liCap">勞保投保薪資上限</label><input type="number" id="liCap" step="100"></div>
+      <p class="hint f full">勞退基金有最低保證收益（二年期定存利率，約 1.7%）；2005～2025 年平均收益率約 7.64%，預設用 6%。勞保上限目前 45,800 元；如果未來修法調高，可以在這裡改。年金化利率是把勞退專戶依平均餘命攤成月領時用的利率。</p>
+    </div>
+  </details>
+  <details open>
+    <summary>加薪情境（第 5 區比較用）</summary>
+    <div class="fields">
+      <div class="f"><label for="newWage">加薪後月薪（經常性）</label><input type="number" id="newWage" min="0" step="1000"></div>
+      <div class="f"><label for="raiseAt">加薪生效年月</label><input type="month" id="raiseAt"></div>
+      <div class="f"><label for="newBonusM">加薪後年終（幾個月）</label><input type="number" id="newBonusM" min="0" step="0.5"></div>
+      <div class="f"><label for="applyRaise">主要結果套用加薪</label><select id="applyRaise"><option value="0">否，維持現狀</option><option value="1">是</option></select></div>
+    </div>
+  </details>
+  <div class="btnrow"><button type="button" id="reset">恢復預設值</button></div>
+</form>
+</aside>
+
+<main>
+  <div class="tiles" id="tiles"></div>
+
+  <section class="card" id="s1">
+    <h2><span class="no">01</span>薪資結構與投保級距</h2>
+    <div class="two">
+      <div class="tw"><table id="tInsure"></table></div>
+      <div class="tw"><table id="tPay"></table></div>
+    </div>
+    <p class="note" id="n1"></p>
+  </section>
+
+  <section class="card" id="s2">
+    <h2><span class="no">02</span>勞保老年給付</h2>
+    <div class="two">
+      <div class="kv" id="kvLI"></div>
+      <div class="kv" id="kvLI2"></div>
+    </div>
+    <p class="note" id="n2"></p>
+  </section>
+
+  <section class="card" id="s3">
+    <h2><span class="no">03</span>勞退（新制個人專戶）</h2>
+    <div class="two">
+      <div class="kv" id="kvLP"></div>
+      <div class="kv" id="kvLP2"></div>
+    </div>
+    <p class="note" id="n3"></p>
+  </section>
+
+  <section class="card" id="s4">
+    <h2><span class="no">04</span>幾歲退休領多少</h2>
+    <div class="tw"><table id="tAges"></table></div>
+    <p class="note">每列都假設工作到該年齡，勞保、勞退都從該年齡開始領（未滿 60 歲則 60 歲起領）。「需自備資產」是退休當下要準備多少錢，才能補足生活費到預期壽命。底色那列是你目前設定的退休年齡。</p>
+  </section>
+
+  <section class="card" id="s5">
+    <h2><span class="no">05</span>本業加薪後怎麼做</h2>
+    <div class="tw"><table id="tRaise"></table></div>
+    <ul class="adv" id="adv"></ul>
+  </section>
+</main>
+</div>
+<footer>依 2026 年（民國 115 年）勞保投保薪資分級表、勞退月提繳分級表與現行條文估算；所得稅以 114 年度免稅額 97,000、標準扣除 131,000、薪資特別扣除 218,000 及級距 5/12/20/30/40% 計算。平均餘命以勞保局常用值估計（60 歲 23 年、65 歲 19 年、70 歲 16 年）。所有結果僅供參考，實際金額以勞保局核定為準。</footer>
+
+<script>
+(function(){
+const DEF={birth:"1995-01",lifeExp:85,dep:0,expense:40000,base:45000,meal:0,allow:0,ot:0,bonusM:1.5,otherBonus:0,growth:0,otherInc:0,
+  liYears:5,liAvg:42000,lpYears:5,bal:150000,emp:6,self:0,retire:65,lpMode:"m",liClaim:"",lpClaim:"",
+  rFund:6,rAnn:2,inf:2,rInv:5,rPost:3,liCap:45800,newWage:70000,raiseAt:"2027-07",newBonusM:2,applyRaise:"0"};
+const KEY="retire-calc-v1";
+const $=id=>document.getElementById(id);
+const selEl=$("self");
+for(let i=0;i<=6;i++){const o=document.createElement("option");o.value=i;o.textContent=i===0?"不自提":i+"%";selEl.appendChild(o);}
+
+const LI=[29500,31800,33300,34800,36300,38200,40100,42000,43900,45800];
+const LP=[29500,30300,31800,33300,34800,36300,38200,40100,42000,43900,45800,48200,50600,53000,55400,57800,60800,63800,66800,69800,72800,76500,80200,83900,87600,92100,96600,101100,105600,110100,115500,120900,126300,131700,137100,142500,147900,150000];
+const OCC_CAP=72800;
+
+function load(){let s={};try{s=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
+  for(const k in DEF){const el=$(k);el.value=(s[k]!==undefined?s[k]:DEF[k]);}}
+function save(){const s={};for(const k in DEF)s[k]=$(k).value;try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+function num(k){const v=parseFloat($(k).value);return isNaN(v)?(typeof DEF[k]==="number"?DEF[k]:0):v;}
+function ym(k){const v=$(k).value||DEF[k];const [y,m]=v.split("-").map(Number);return y*12+(m-1);}
+
+const fmt=n=>isFinite(n)?Math.round(n).toLocaleString("zh-TW"):"—";
+const yuan=n=>fmt(n)+" 元";
+const wan=n=>isFinite(n)?(n>=1e4?(Math.round(n/1e3)/10).toLocaleString("zh-TW")+" 萬":fmt(n)+" 元"):"—";
+
+function gradeOf(list,s){for(const g of list)if(s<=g)return g;return list[list.length-1];}
+function liList(cap){const l=LI.filter(g=>g<=cap);LP.forEach(g=>{if(g>45800&&g<=cap)l.push(g)});if(l[l.length-1]!==cap)l.push(cap);return l;}
+function liGrade(s,cap){return gradeOf(liList(cap),s);}
+function lpGrade(s){return gradeOf(LP,s);}
+function occGrade(s){return Math.min(gradeOf(LP,s),OCC_CAP);}
+function LE(a){if(a<=65)return 23-(a-60)*0.8;if(a<=70)return 19-(a-65)*0.6;return Math.max(5,16-(a-70)*0.6);}
+function annuity(pv,r,n){const i=r/12;if(n<=0)return 0;if(i===0)return pv/n;return pv*i/(1-Math.pow(1+i,-n));}
+function legalAge(by){const roc=by-1911;if(roc<=46)return 60;if(roc>=51)return 65;return 60+(roc-46);}
+const BR=[[590000,.05],[1330000,.12],[2660000,.2],[4980000,.3],[Infinity,.4]];
+function taxable(inc,selfC,salary){return Math.max(0,inc-selfC-97000-131000-Math.min(218000,salary));}
+function tax(t){let r=0,prev=0;for(const [cap,rate] of BR){if(t>prev){r+=(Math.min(t,cap)-prev)*rate;}prev=cap;}return r;}
+function marg(t){for(const [cap,rate] of BR)if(t<=cap)return rate;return .4;}
+
+function wageNow(){return num("base")+num("meal")+num("allow")+num("ot");}
+
+/* 核心模擬：p 為參數物件 */
+function sim(p){
+  const now=new Date();const nowIdx=now.getFullYear()*12+now.getMonth();
+  const bIdx=p.by*12+p.bm;
+  const ageNow=(nowIdx-bIdx)/12;
+  const retireIdx=bIdx+Math.round(p.retire*12);
+  const lpClaimAge=Math.max(60,p.lpClaim==null?p.retire:p.lpClaim);
+  const legal=legalAge(p.by);
+  let liClaimAge=Math.max(p.liClaim==null?p.retire:p.liClaim,p.retire,legal-5);
+  const lpClaimIdx=bIdx+Math.round(lpClaimAge*12);
+  const end=Math.max(lpClaimIdx,retireIdx);
+  let bal=p.bal,contrib=0,liM=0,lpM=0;const liArr=[];
+  const g=p.growth/100,rm=Math.pow(1+p.rFund/100,1/12)-1;
+  for(let idx=nowIdx;idx<end;idx++){
+    let w;
+    if(p.raiseIdx!=null&&idx>=p.raiseIdx){w=p.raiseWage*Math.pow(1+g,Math.floor((idx-p.raiseIdx)/12));}
+    else{w=p.wage*Math.pow(1+g,Math.floor((idx-nowIdx)/12));}
+    const working=idx<retireIdx;
+    if(working){liArr.push(liGrade(w,p.liCap));liM++;}
+    if(idx<lpClaimIdx){
+      if(working){const c=lpGrade(w)*(p.emp+p.self)/100;bal+=c;contrib+=c;lpM++;}
+      bal*=1+rm;
+    }
+  }
+  const liYears=p.liYears+liM/12, lpYears=p.lpYears+lpM/12;
+  const past=Array(Math.min(60,Math.round(p.liYears*12))).fill(p.liAvg);
+  const all=past.concat(liArr).sort((a,b)=>b-a).slice(0,60);
+  const avg=all.length?all.reduce((a,b)=>a+b,0)/all.length:0;
+  let adjYears=Math.floor(liClaimAge-legal);adjYears=Math.max(-5,Math.min(5,adjYears));
+  const adj=adjYears*0.04;
+  const A=avg*liYears*0.00775+3000, B=avg*liYears*0.0155;
+  const liAnnuity=liYears>=15;
+  const liMonthly=liAnnuity?Math.max(A,B)*(1+adj):0;
+  const liLump=liAnnuity?0:avg*liYears;
+  const yrsToLi=(bIdx+liClaimAge*12-nowIdx)/12, yrsToLp=(lpClaimIdx-nowIdx)/12;
+  const defl=y=>Math.pow(1+p.inf/100,Math.max(0,y));
+  const le=LE(lpClaimAge);
+  const lpCanMonthly=lpYears>=15;
+  const lpMonthlyRaw=annuity(bal,p.rAnn/100,Math.round(le*12));
+  const lpUseMonthly=p.lpMode==="m"&&lpCanMonthly;
+  const lpMonthly=lpUseMonthly?lpMonthlyRaw:0;
+  // 退休資金缺口：從停止工作到預期壽命，逐年現金流折現到退休當下
+  let need=0;const rp=p.rPost/100,inf=p.inf/100;
+  for(let a=Math.ceil(p.retire);a<p.lifeExp;a++){
+    const t=a-p.retire;
+    const exp=p.expense*12*Math.pow(1+inf,a-ageNow);
+    let inc=0;
+    if(a>=liClaimAge){inc+=liAnnuity?liMonthly*12*Math.pow(1+inf,a-liClaimAge):0;}
+    if(liAnnuity===false&&a===Math.ceil(liClaimAge))inc+=liLump;
+    if(lpUseMonthly){if(a>=lpClaimAge&&a<lpClaimAge+le)inc+=lpMonthly*12;}
+    else if(a===Math.ceil(lpClaimAge))inc+=bal;
+    need+=(exp-inc)/Math.pow(1+rp,t);
+  }
+  need=Math.max(0,need);
+  const monthsToRetire=retireIdx-nowIdx;
+  const ri=Math.pow(1+p.rInv/100,1/12)-1;
+  const save=monthsToRetire>0?(ri===0?need/monthsToRetire:need*ri/(Math.pow(1+ri,monthsToRetire)-1)):NaN;
+  const liAt15=p.liYears>=15?null:nowIdx+Math.ceil((15-p.liYears)*12);
+  return {ageNow,legal,liClaimAge,lpClaimAge,liYears,lpYears,avg,A,B,adj,adjYears,liAnnuity,liMonthly,liLump,
+    bal,contrib,principal:p.bal+contrib,le,lpCanMonthly,lpMonthlyRaw,lpMonthly,lpUseMonthly,yrsToLi,yrsToLp,
+    liReal:liMonthly/defl(yrsToLi),lpReal:lpMonthlyRaw/defl(yrsToLp),need,save,liAt15,nowIdx,defl};
+}
+
+function baseParams(over){
+  const b=ym("birth");
+  const p={by:Math.floor(b/12),bm:b%12,wage:wageNow(),growth:num("growth"),liYears:num("liYears"),liAvg:num("liAvg"),
+    lpYears:num("lpYears"),bal:num("bal"),emp:num("emp"),self:num("self"),retire:num("retire"),
+    liClaim:$("liClaim").value===""?null:num("liClaim"),lpClaim:$("lpClaim").value===""?null:num("lpClaim"),
+    lpMode:$("lpMode").value,rFund:num("rFund"),rAnn:num("rAnn"),inf:num("inf"),rInv:num("rInv"),rPost:num("rPost"),
+    liCap:num("liCap"),lifeExp:num("lifeExp"),expense:num("expense"),raiseIdx:null,raiseWage:0};
+  if($("applyRaise").value==="1"){p.raiseIdx=ym("raiseAt");p.raiseWage=num("newWage");}
+  return Object.assign(p,over||{});
+}
+const idxToStr=i=>{const y=Math.floor(i/12),m=i%12+1;return `${y-1911} 年 ${m} 月（${y}）`;};
+
+function tile(k,v,s,hl){return `<div class="tile${hl?" hl":""}"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s||""}</div></div>`;}
+function kv(rows){return rows.map(([k,v,big])=>`<div>${k}</div><div class="${big?"big":""}">${v}</div>`).join("");}
+
+function payInfo(wage,bonusM,otherBonus,selfRate,dep){
+  const li=liGrade(wage,num("liCap")),lp=lpGrade(wage),occ=occGrade(wage),hi=lpGrade(wage);
+  const liP=Math.round(li*0.125*0.2), hiP=Math.round(hi*0.0517*0.3)*(1+dep), selfC=Math.round(lp*selfRate/100);
+  const emp=Math.round(lp*num("emp")/100);
+  const salaryYr=wage*12+num("base")/Math.max(1,wageNow())*wage*bonusM+otherBonus;
+  const inc=salaryYr+num("otherInc");
+  const t0=taxable(inc,0,salaryYr), t1=taxable(inc,selfC*12,salaryYr);
+  const tax0=tax(t0),tax1=tax(t1);
+  return {li,lp,occ,hi,liP,hiP,selfC,emp,net:wage-liP-hiP-selfC,salaryYr,inc,t0,tax0,tax1,saveTax:tax0-tax1,marg:marg(t0)};
+}
+
+function render(){
+  save();
+  const p=baseParams();const r=sim(p);
+  const wage=($("applyRaise").value==="1"&&r.nowIdx>=ym("raiseAt"))?num("newWage"):wageNow();
+  const pi=payInfo(wageNow(),num("bonusM"),num("otherBonus"),num("self"),num("dep"));
+  const totalM=r.liMonthly+r.lpMonthly;
+  const totalReal=(r.liAnnuity?r.liReal:0)+(r.lpUseMonthly?r.lpReal:0);
+
+  $("tiles").innerHTML=
+    tile("勞保月領",r.liAnnuity?yuan(r.liMonthly):"年資未滿 15 年",r.liAnnuity?`年領 ${wan(r.liMonthly*12)}・${fmt(r.liClaimAge)} 歲起`:`一次金 ${wan(r.liLump)}`)+
+    tile("勞退"+(r.lpUseMonthly?"月領":"一次領"),r.lpUseMonthly?yuan(r.lpMonthly):wan(r.bal),r.lpUseMonthly?`年領 ${wan(r.lpMonthly*12)}・${fmt(r.lpClaimAge)} 歲起`:(r.lpCanMonthly?"月領約 "+yuan(r.lpMonthlyRaw):"提繳未滿 15 年只能一次領"))+
+    tile("兩者合計（每月）",yuan(totalM),`約等於今天的 ${yuan(totalReal)}`,true)+
+    tile("退休需自備資產",wan(r.need),isFinite(r.save)?`從現在起每月投資 ${yuan(r.save)}`:"");
+
+  // 01
+  $("tInsure").innerHTML=`<tr><th>項目</th><th>金額／級距</th></tr>
+   <tr><td>經常性薪資合計</td><td>${yuan(wageNow())}</td></tr>
+   <tr><td>勞保・就保投保薪資</td><td>${yuan(pi.li)} ${pi.li>=num("liCap")?'<span class="pill warn">已達上限</span>':''}</td></tr>
+   <tr><td>職災保險投保薪資</td><td>${yuan(pi.occ)}</td></tr>
+   <tr><td>勞退月提繳工資</td><td>${yuan(pi.lp)}</td></tr>
+   <tr><td>健保投保金額</td><td>${wageNow()>150000?"超過 15 萬，請查健保署級距":yuan(pi.hi)}</td></tr>
+   <tr><td>年度薪資所得（含年終、獎金）</td><td>${wan(pi.salaryYr)}</td></tr>
+   <tr><td>綜所稅邊際稅率（估）</td><td>${Math.round(pi.marg*100)}%</td></tr>`;
+  $("tPay").innerHTML=`<tr><th>每月</th><th>個人負擔</th><th>雇主</th></tr>
+   <tr><td>勞保＋就保（12.5%）</td><td>${fmt(pi.liP)}</td><td>${fmt(pi.li*0.125*0.7)}</td></tr>
+   <tr><td>健保（5.17%${num("dep")>0?"，含眷屬":""}）</td><td>${fmt(pi.hiP)}</td><td>—</td></tr>
+   <tr><td>勞退</td><td>${fmt(pi.selfC)}${num("self")>0?`（自提 ${num("self")}%）`:""}</td><td>${fmt(pi.emp)}（${num("emp")}%）</td></tr>
+   <tr class="em"><td>估計實領</td><td>${fmt(pi.net)}</td><td></td></tr>`;
+  $("n1").textContent=`勞保只算到 ${fmt(num("liCap"))} 元，勞退與職保依實際薪資對應級距（勞退上限 15 萬、職保上限 72,800）。雇主另負擔職災保險與健保，表中健保雇主部分未列。自提 ${num("self")}% 時，今年約可少繳稅 ${fmt(pi.saveTax)} 元。`;
+
+  // 02
+  $("kvLI").innerHTML=kv([
+    ["法定請領年齡",`${r.legal} 歲`],
+    ["你設定開始請領",`${fmt(r.liClaimAge)} 歲`],
+    ["請領時勞保年資",`${r.liYears.toFixed(1)} 年`],
+    ["平均月投保薪資（最高 60 個月）",yuan(r.avg)],
+    ["提早／延後調整",r.adjYears===0?"無":(r.adjYears<0?`提早 ${-r.adjYears} 年，減 ${-r.adjYears*4}%`:`延後 ${r.adjYears} 年，加 ${r.adjYears*4}%`)]
+  ]);
+  $("kvLI2").innerHTML=r.liAnnuity?kv([
+    ["A 式：均薪×年資×0.775%+3,000",yuan(r.A)],
+    ["B 式：均薪×年資×1.55%",yuan(r.B)],
+    ["月領（擇優、含調整）",yuan(r.liMonthly),true],
+    ["年領",yuan(r.liMonthly*12),true],
+    ["約等於今天的購買力",yuan(r.liReal)+"／月"]
+  ]):kv([["年資未滿 15 年","只能領老年一次金"],["一次金（均薪×年資）",yuan(r.liLump),true]]);
+  $("n2").textContent=(r.liAt15?`照目前持續加保，勞保年資約在 ${idxToStr(r.liAt15)} 滿 15 年，之後才能月領。`:"勞保年資已滿 15 年。")+
+    "98 年以後才第一次加保的人沒有「一次請領老年給付」可選：滿 15 年只能月領。勞保年金開始領之後，物價累計漲超過 5% 會跟著調高。";
+
+  // 03
+  $("kvLP").innerHTML=kv([
+    ["開始請領",`${fmt(r.lpClaimAge)} 歲`],
+    ["提繳年資",`${r.lpYears.toFixed(1)} 年 ${r.lpCanMonthly?'<span class="pill good">可選月領</span>':'<span class="pill bad">未滿 15 年</span>'}`],
+    ["累積本金（含目前餘額）",wan(r.principal)],
+    ["專戶餘額（含收益）",wan(r.bal),true],
+    ["其中收益",wan(r.bal-r.principal)]
+  ]);
+  $("kvLP2").innerHTML=kv([
+    ["一次領",yuan(r.bal),true],
+    ["月領（依平均餘命 "+r.le.toFixed(0)+" 年）",r.lpCanMonthly?yuan(r.lpMonthlyRaw):"不可月領",true],
+    ["年領",r.lpCanMonthly?yuan(r.lpMonthlyRaw*12):"—"],
+    ["月領會領到",r.lpCanMonthly?`約 ${Math.round(r.lpClaimAge+r.le)} 歲`:"—"],
+    ["約等於今天的購買力",r.lpCanMonthly?yuan(r.lpReal)+"／月":"—"]
+  ]);
+  $("n3").textContent="月領是把專戶依平均餘命攤提，活超過平均餘命就領完了，不像勞保活到老領到老；還沒領的餘額會繼續參與勞退基金收益。一次領則全部由你自己配置。月領首次入帳後 30 天內可改一次領（限一次）。";
+
+  // 04
+  const ages=[55,60,62,65,67,70];const cur=num("retire");if(!ages.includes(cur))ages.push(cur);ages.sort((a,b)=>a-b);
+  let rows=`<tr><th>停止工作</th><th>勞保月領</th><th>勞退月領</th><th>合計／月</th><th>今日購買力</th><th>需自備資產</th><th>每月需投資</th></tr>`;
+  ages.forEach(a=>{
+    const s=sim(baseParams({retire:a,liClaim:null,lpClaim:null}));
+    const li=s.liAnnuity?fmt(s.liMonthly):`一次 ${wan(s.liLump)}`;
+    const lp=s.lpUseMonthly?fmt(s.lpMonthly):`一次 ${wan(s.bal)}`;
+    const real=(s.liAnnuity?s.liReal:0)+(s.lpUseMonthly?s.lpReal:0);
+    rows+=`<tr class="${a===cur?"sel":""}"><td>${a} 歲${a<60?"（60 歲起領）":""}</td><td>${li}</td><td>${lp}</td><td>${fmt(s.liMonthly+s.lpMonthly)}</td><td>${fmt(real)}</td><td>${wan(s.need)}</td><td>${fmt(s.save)}</td></tr>`;
+  });
+  $("tAges").innerHTML=rows;
+
+  // 05
+  const nw=num("newWage"),nb=num("newBonusM");
+  const pA=baseParams({raiseIdx:null});
+  const pB=baseParams({raiseIdx:ym("raiseAt"),raiseWage:nw});
+  const pC=baseParams({raiseIdx:ym("raiseAt"),raiseWage:nw,self:6});
+  const A=sim(pA),B=sim(pB),C=sim(pC);
+  const piA=payInfo(wageNow(),num("bonusM"),num("otherBonus"),num("self"),num("dep"));
+  const piB=payInfo(nw,nb,num("otherBonus"),num("self"),num("dep"));
+  const piC=payInfo(nw,nb,num("otherBonus"),6,num("dep"));
+  const col=(s,pi)=>({li:s.liAnnuity?fmt(s.liMonthly):"一次金",lp:s.lpCanMonthly?fmt(s.lpMonthlyRaw):"一次領",bal:wan(s.bal),need:wan(s.need),save:fmt(s.save),lpg:fmt(pi.lp),emp:fmt(pi.emp),selfC:fmt(pi.selfC),net:fmt(pi.net),tax:fmt(pi.marg*100)+"%",st:fmt(pi.saveTax)});
+  const a=col(A,piA),b=col(B,piB),c=col(C,piC);
+  const R=(k,l)=>`<tr><td>${l}</td><td>${a[k]}</td><td>${b[k]}</td><td>${c[k]}</td></tr>`;
+  $("tRaise").innerHTML=`<tr><th></th><th>維持現狀</th><th>加薪</th><th>加薪＋自提 6%</th></tr>`+
+    R("lpg","勞退提繳工資")+R("emp","雇主每月提繳")+R("selfC","自提每月")+R("net","估計每月實領")+R("tax","邊際稅率")+R("st","自提每年省稅")+
+    R("li","勞保月領")+R("lp","勞退月領")+R("bal","勞退專戶")+R("need","退休需自備資產")+R("save","每月需投資");
+
+  const adv=[];
+  const netRaise=piB.net-piA.net;
+  if(liGrade(nw,num("liCap"))>=num("liCap"))adv.push(["warn",`<b>勞保不會因為加薪變多。</b>你的投保薪資已在上限 ${fmt(num("liCap"))} 元，加薪後勞保月領還是約 ${fmt(B.liMonthly)} 元，退休主力要靠勞退和自己投資。`]);
+  adv.push(["info",`<b>確認新公司照實申報勞退。</b>月薪 ${fmt(nw)} 元應對應提繳工資 ${fmt(piB.lp)} 元，公司每月要提 ${fmt(piB.emp)} 元。到職 1～2 個月後，上勞保局 e 化服務系統查「勞工退休金提繳異動」確認。`]);
+  if(piC.marg>=0.12)adv.push(["good",`<b>建議自提 6%。</b>加薪後邊際稅率約 ${Math.round(piC.marg*100)}%，自提每月 ${fmt(piC.selfC)} 元，每年約省稅 ${fmt(piC.saveTax)} 元，退休時勞退專戶多約 ${wan(C.bal-B.bal)}，月領多約 ${fmt(C.lpMonthlyRaw-B.lpMonthlyRaw)} 元。代價是這筆錢鎖到 60 歲。`]);
+  else adv.push(["info",`<b>自提可以先不急。</b>加薪後邊際稅率約 ${Math.round(piC.marg*100)}%，自提 6% 每年只省約 ${fmt(piC.saveTax)} 元稅；如果近期有結婚、買房等用錢需求，保留流動性比較重要。等稅率到 12% 以上再開。`]);
+  if(netRaise>0){
+    const half=netRaise/2,yrs=(ym("birth")+num("retire")*12-ym("raiseAt"))/12;
+    const rr=num("rInv")/100,fv=yrs>0?half*12*((Math.pow(1+rr,yrs)-1)/(rr||1e-9)):0;
+    adv.push(["good",`<b>把加薪的一半拿去定期投資。</b>每月實領約多 ${fmt(netRaise)} 元，若把一半（${fmt(half)} 元）投入年報酬 ${num("rInv")}% 的標的直到 ${num("retire")} 歲，退休時約累積 ${wan(fv)}；對照退休需自備資產 ${wan(B.need)}，${fv>=B.need?"已經足夠":"還差約 "+wan(B.need-fv)}。`]);
+  }
+  adv.push(["info",`<b>轉職時讓勞保不中斷。</b>勞保年資要連續累積才能早點滿 15 年；新舊工作中間如果有空窗，可以透過職業工會加保。勞退專戶會跟著你，不用另外處理。`]);
+  $("adv").innerHTML=adv.map(([k,t])=>`<li class="${k}">${t}</li>`).join("");
+}
+
+load();
+$("form").addEventListener("input",render);
+$("form").addEventListener("change",render);
+$("reset").addEventListener("click",()=>{try{localStorage.removeItem(KEY)}catch(e){}for(const k in DEF)$(k).value=DEF[k];render();});
+render();
+})();
+</script>
+</body>
+</html>
