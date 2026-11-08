@@ -383,10 +383,21 @@ function normalize(d){
   d.listings = (d.listings || []).map(l => { l.eval = l.eval || {}; l.eval.ratings = l.eval.ratings || {}; l.eval.notes = l.eval.notes || {}; l.eval.commute = l.eval.commute || {}; l.eval.status = l.eval.status || '考慮中'; return l; });
   return d;
 }
+function ghHint(status, op, detail){
+  const base = `GitHub ${op}失敗（${status}${detail ? '：' + detail : ''}）`;
+  const hint = {
+    401: 'token 錯誤或過期：重新複製 github_pat_ 開頭那整串，貼到設定裡。',
+    403: 'token 權限不夠：到 GitHub 編輯這把 token，Repository permissions → Contents 要選「Read and write」。',
+    404: 'token 看不到這個 repo：Repository access 要勾 yinruei/yinruei.github.io；或檢查設定裡的 Owner／Repo／Branch／路徑。',
+    409: '剛好有另一個人也在同步，請再按一次。',
+    422: '資料版本衝突，請再按一次「同步」。'
+  }[status] || '';
+  return hint ? `${base}\n${hint}` : base;
+}
 async function fetchRemote(){
   if (cfg.token) {
     const r = await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path}?ref=${encodeURIComponent(cfg.branch)}&t=${Date.now()}`, { headers: { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json' }, cache:'no-store' });
-    if (!r.ok) throw new Error(`GitHub 讀取失敗（${r.status}）`);
+    if (!r.ok) throw new Error(ghHint(r.status, '讀取'));
     const j = await r.json();
     return { doc: JSON.parse(b64dec(j.content)), sha: j.sha };
   }
@@ -443,11 +454,16 @@ async function sync(){
     merged.updatedAt = now();
     const body = { message: `租屋比較：更新物件資料（${new Date().toLocaleString('zh-TW')}）`, content: b64enc(JSON.stringify(merged, null, 2) + '\n'), sha: r.sha, branch: cfg.branch };
     const w = await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path}`, { method:'PUT', headers: { Authorization:`Bearer ${cfg.token}`, Accept:'application/vnd.github+json', 'Content-Type':'application/json' }, body: JSON.stringify(body) });
-    if (!w.ok) { const j = await w.json().catch(()=>({})); throw new Error(`${w.status} ${j.message || ''}`); }
+    if (!w.ok) { const j = await w.json().catch(()=>({})); throw new Error(ghHint(w.status, '寫入', j.message)); }
     const j = await w.json();
     doc = normalize(merged); remoteSha = j.content.sha; dirty = false; saveLocal(); render();
     toast('已同步到 GitHub（網站約 1 分鐘後更新）');
-  } catch (e) { setPill('error'); toast('同步失敗：' + e.message); }
+  } catch (e) {
+    setPill('error');
+    const msg = e instanceof TypeError ? '連不到 GitHub（網路問題，或 token 裡有多餘的空白／換行）' : e.message;
+    $('#syncPill').title = msg;
+    alert('同步失敗\n\n' + msg + '\n\n你的變更還在這台裝置上，修好後再按一次「同步」即可。');
+  }
   finally { $('#btnSync').disabled = false; }
 }
 
