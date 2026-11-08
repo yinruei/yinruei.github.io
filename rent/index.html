@@ -544,7 +544,7 @@ function cardHTML({ l, d, fails }){
     <article class="card">
       <div class="need">
         <p class="title">資料待補・#${esc(l.id)}</p>
-        <p class="hint">這筆 591 頁面暫時讀不到（可能已下架或被擋）。打開確認後，按「填資料」補上；或把連結再丟給 Claude。</p>
+        <p class="hint">這筆還沒有租金、坪數等資料（網頁沒辦法自己讀 591）。按「填資料」自己補，或把連結丟給 Claude 幫忙抓。</p>
         <div class="cardfoot">
           <a class="btn small" href="${esc(l.url)}" target="_blank" rel="noopener">開 591 ↗</a>
           <button class="btn small primary" data-edit="${esc(l.id)}">填資料</button>
@@ -709,7 +709,7 @@ $('#dlgEdit').addEventListener('close', () => {
   l.eval.status = f.status.value; l.eval.viewDate = str('viewDate');
   l.eval.commute = { a: num('commuteA'), b: num('commuteB') };
   l.eval.notes = { a: f.noteA.value.trim(), b: f.noteB.value.trim() };
-  if (l.rent || l.title) delete l.needsData;
+  if (l.rent || l.title) delete l.needsData; else l.needsData = true;
   if (!editingId) doc.listings.push(l);
   touch(l); fillFilters(); render(); toast('已存在這台裝置，記得按「同步」');
 });
