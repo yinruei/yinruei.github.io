@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-09T00:40:00+08:00",
+  "updatedAt": "2026-11-08T16:54:30.566Z",
   "people": {
     "a": "小黑",
     "b": "另一半"
@@ -646,6 +646,60 @@
       "title": "",
       "needsData": true,
       "fetchedAt": null
+    },
+    {
+      "id": "22235987",
+      "eval": {
+        "ratings": {},
+        "notes": {
+          "a": "",
+          "b": ""
+        },
+        "commute": {
+          "a": null,
+          "b": null
+        },
+        "status": "考慮中",
+        "viewDate": ""
+      },
+      "title": "",
+      "city": "台北市",
+      "district": "",
+      "address": "",
+      "rent": null,
+      "mgmtFee": null,
+      "mgmtIncluded": false,
+      "depositMonths": 2,
+      "agentFeeMonths": null,
+      "ping": null,
+      "rooms": null,
+      "halls": null,
+      "baths": null,
+      "floor": "",
+      "totalFloors": "",
+      "type": "電梯大樓",
+      "age": null,
+      "minLease": "",
+      "utilities": "",
+      "image": "",
+      "mrt": {
+        "name": "",
+        "m": null
+      },
+      "contact": {
+        "name": "",
+        "role": "仲介"
+      },
+      "highlights": [],
+      "warnings": [],
+      "url": "https://rent.591.com.tw/22235987",
+      "elevator": null,
+      "cooking": null,
+      "subsidy": null,
+      "tax": null,
+      "household": null,
+      "pets": null,
+      "updatedAt": "2026-11-08T16:38:18.642Z"
     }
   ]
 }
