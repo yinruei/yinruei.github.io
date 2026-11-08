@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-08T16:54:30.566Z",
+  "updatedAt": "2026-11-08T16:55:50.968Z",
   "people": {
     "a": "小黑",
     "b": "另一半"
@@ -60,21 +60,39 @@
         "24,800 是租 1.5 年的價格，租 1 年為 26,800",
         "仲介服務費金額未寫明（先以半個月估）"
       ],
-      "fetchedAt": "2026-11-09"
+      "fetchedAt": "2026-11-09",
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22247612",
       "url": "https://rent.591.com.tw/22247612",
       "title": "",
       "needsData": true,
-      "fetchedAt": null
+      "fetchedAt": null,
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22248466",
       "url": "https://rent.591.com.tw/22248466",
       "title": "",
       "needsData": true,
-      "fetchedAt": null
+      "fetchedAt": null,
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22262815",
@@ -125,7 +143,13 @@
         "服務費半個月；退租清潔費 2,500（寵物另加 1,000）",
         "下訂後 10 天內要簽約"
       ],
-      "fetchedAt": "2026-11-09"
+      "fetchedAt": "2026-11-09",
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22274125",
@@ -174,7 +198,13 @@
         "只有 1 房",
         "禁菸、不可設神明廳"
       ],
-      "fetchedAt": "2026-11-09"
+      "fetchedAt": "2026-11-09",
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22225084",
@@ -222,7 +252,13 @@
         "頂樓加蓋（夏天熱、漏水要看）",
         "簽約後收服務費"
       ],
-      "fetchedAt": "2026-11-09"
+      "fetchedAt": "2026-11-09",
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22259953",
@@ -271,7 +307,13 @@
         "不可開伙",
         "租補／報稅／入籍未標示"
       ],
-      "fetchedAt": "2026-11-09"
+      "fetchedAt": "2026-11-09",
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22244931",
@@ -279,7 +321,13 @@
       "shortUrl": "https://591.to/e6Y5l",
       "title": "",
       "needsData": true,
-      "fetchedAt": null
+      "fetchedAt": null,
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22289207",
@@ -327,7 +375,13 @@
         "套房（無客廳）",
         "4 樓無電梯"
       ],
-      "fetchedAt": "2026-11-09"
+      "fetchedAt": "2026-11-09",
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22279879",
@@ -375,7 +429,13 @@
       "warnings": [
         "內文寫月租 39,000（未扣補貼），和標題 29,800 不同，要先問清楚"
       ],
-      "fetchedAt": "2026-11-09"
+      "fetchedAt": "2026-11-09",
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22263909",
@@ -383,7 +443,13 @@
       "shortUrl": "https://591.to/e6nZR",
       "title": "",
       "needsData": true,
-      "fetchedAt": null
+      "fetchedAt": null,
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22242006",
@@ -432,7 +498,13 @@
         "首月 24,888，第二個月起 26,888（表內用 26,888）",
         "5 樓無電梯；內文寫 6 樓，樓層要確認"
       ],
-      "fetchedAt": "2026-11-09"
+      "fetchedAt": "2026-11-09",
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22277964",
@@ -440,7 +512,13 @@
       "shortUrl": "https://591.to/e6d6f",
       "title": "",
       "needsData": true,
-      "fetchedAt": null
+      "fetchedAt": null,
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22268673",
@@ -489,7 +567,13 @@
         "坪數小（9 坪）",
         "車位另計"
       ],
-      "fetchedAt": "2026-11-09"
+      "fetchedAt": "2026-11-09",
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22283666",
@@ -538,7 +622,13 @@
         "坪數最小（8 坪）",
         "屋齡約 40 年、頂樓"
       ],
-      "fetchedAt": "2026-11-09"
+      "fetchedAt": "2026-11-09",
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22224977",
@@ -588,7 +678,13 @@
         "34.6 坪可能是權狀坪（含公設）",
         "要配合公證、一週內起租"
       ],
-      "fetchedAt": "2026-11-09"
+      "fetchedAt": "2026-11-09",
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22300449",
@@ -637,7 +733,13 @@
         "管理費 1,800",
         "租補／報稅／入籍未標示"
       ],
-      "fetchedAt": "2026-11-09"
+      "fetchedAt": "2026-11-09",
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22277914",
@@ -645,7 +747,13 @@
       "shortUrl": "https://591.to/eFrK5",
       "title": "",
       "needsData": true,
-      "fetchedAt": null
+      "fetchedAt": null,
+      "eval": {
+        "ratings": {},
+        "notes": {},
+        "commute": {},
+        "status": "考慮中"
+      }
     },
     {
       "id": "22235987",
@@ -700,6 +808,60 @@
       "household": null,
       "pets": null,
       "updatedAt": "2026-11-08T16:38:18.642Z"
+    },
+    {
+      "id": "22290665",
+      "eval": {
+        "ratings": {},
+        "notes": {
+          "a": "",
+          "b": ""
+        },
+        "commute": {
+          "a": null,
+          "b": null
+        },
+        "status": "考慮中",
+        "viewDate": ""
+      },
+      "title": "",
+      "city": "台北市",
+      "district": "",
+      "address": "",
+      "rent": null,
+      "mgmtFee": null,
+      "mgmtIncluded": false,
+      "depositMonths": 2,
+      "agentFeeMonths": null,
+      "ping": null,
+      "rooms": null,
+      "halls": null,
+      "baths": null,
+      "floor": "",
+      "totalFloors": "",
+      "type": "電梯大樓",
+      "age": null,
+      "minLease": "",
+      "utilities": "",
+      "image": "",
+      "mrt": {
+        "name": "",
+        "m": null
+      },
+      "contact": {
+        "name": "",
+        "role": "仲介"
+      },
+      "highlights": [],
+      "warnings": [],
+      "url": "https://rent.591.com.tw/22290665",
+      "elevator": null,
+      "cooking": null,
+      "subsidy": null,
+      "tax": null,
+      "household": null,
+      "pets": null,
+      "updatedAt": "2026-11-08T16:55:47.040Z"
     }
   ]
 }
